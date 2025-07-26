@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eidolons</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            background-color: #000000;
+            font-family: 'Georgia', serif;
+            color: #ffffff;
+        }
+        
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .background-image {
+            max-width: 100vw;
+            max-height: 100vh;
+            width: auto;
+            height: auto;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+            object-fit: contain;
+            animation: parallax-blur linear;
+            animation-timeline: scroll(root);
+            animation-range: 0% 100%;
+        }
+        
+        @keyframes parallax-blur {
+            0% {
+                transform: translateY(0) scale(1);
+                filter: blur(0px);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50vh) scale(2);
+                filter: blur(8px);
+                opacity: 0;
+            }
+        }
+        
+        .content {
+            position: relative;
+            min-height: 300vh;
+            padding: 80vh 20px 50px;
+        }
+        
+        .poem-container {
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+            font-size: 1.2em;
+        }
+        
+        .poem-title {
+            font-size: 3em;
+            text-align: center;
+            margin-bottom: 2em;
+            font-weight: bold;
+            animation: fade-in-title linear;
+            animation-timeline: scroll(root);
+            animation-range: 0 80vh;
+        }
+        
+        @keyframes fade-in-title {
+            0% {
+                opacity: 0.2;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .poem-stanza {
+            margin-bottom: 2em;
+            animation: fade-in-stanza linear;
+            animation-timeline: scroll(root);
+            animation-range: 0 100vh;
+        }
+        
+        @keyframes fade-in-stanza {
+            0% {
+                opacity: 0.1;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .poem-line {
+            margin-bottom: 0.3em;
+        }
+        
+        .author {
+            text-align: right;
+            font-style: italic;
+            margin-top: 3em;
+            font-size: 1.1em;
+            animation: fade-in-author linear;
+            animation-timeline: scroll(root);
+            animation-range: 250vh 290vh;
+        }
+        
+        @keyframes fade-in-author {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Fallback for browsers that don't support scroll-driven animations */
+        @supports not (animation-timeline: scroll()) {
+            .background-image {
+                animation: none;
+                filter: blur(2px);
+                opacity: 0.7;
+                transform: scale(1.05);
+            }
+            
+            .poem-title,
+            .poem-stanza,
+            .author {
+                animation: fade-in-viewport 0.8s ease-out forwards;
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            
+            
+            @keyframes fade-in-viewport {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .poem-container {
+                font-size: 1em;
+                padding: 0 15px;
+            }
+            
+            .poem-title {
+                font-size: 2.2em;
+            }
+        }
+        
+        /* Floating Sparks Animation */
+        .sparks-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 10;
+            overflow: hidden;
+        }
+        
+        .spark {
+            position: absolute;
+            border-radius: 50%;
+            animation: float-spark linear infinite;
+        }
+        
+        .spark::before {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            animation: twinkle ease-in-out infinite alternate;
+        }
+        
+        /* Size and glow variations */
+        .spark.small {
+            width: 1.5px;
+            height: 1.5px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.6) 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+        }
+        
+        .spark.small::before {
+            top: -0.5px;
+            left: -0.5px;
+            width: 2.5px;
+            height: 2.5px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            animation-duration: 1.5s;
+        }
+        
+        .spark.medium {
+            width: 2px;
+            height: 2px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.8) 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
+        }
+        
+        .spark.medium::before {
+            top: -1px;
+            left: -1px;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            animation-duration: 2s;
+        }
+        
+        .spark.large {
+            width: 3px;
+            height: 3px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 1) 0%, rgba(255, 255, 255, 0.6) 40%, rgba(255, 215, 0, 0.3) 70%, transparent 100%);
+        }
+        
+        .spark.large::before {
+            top: -1.5px;
+            left: -1.5px;
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, rgba(255, 215, 0, 0.2) 50%, transparent 80%);
+            animation-duration: 2.5s;
+        }
+        
+        /* Movement direction variations */
+        @keyframes float-spark-straight {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(var(--drift)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes float-spark-wave {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            25% {
+                transform: translateY(75vh) translateX(calc(var(--drift) * 0.3)) rotate(90deg);
+            }
+            50% {
+                transform: translateY(50vh) translateX(calc(var(--drift) * 0.7)) rotate(180deg);
+            }
+            75% {
+                transform: translateY(25vh) translateX(var(--drift)) rotate(270deg);
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(calc(var(--drift) * 1.2)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes float-spark-spiral {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            25% {
+                transform: translateY(75vh) translateX(calc(var(--drift) * -0.5)) rotate(90deg);
+            }
+            50% {
+                transform: translateY(50vh) translateX(var(--drift)) rotate(180deg);
+            }
+            75% {
+                transform: translateY(25vh) translateX(calc(var(--drift) * -0.3)) rotate(270deg);
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(calc(var(--drift) * 0.8)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes twinkle {
+            0% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+        
+        /* Individual spark variations with size, glow, and movement patterns */
+        .spark:nth-child(1) { left: 10%; animation: float-spark-straight 8s linear infinite; animation-delay: 0s; --drift: 20px; }
+        .spark:nth-child(2) { left: 20%; animation: float-spark-wave 12s linear infinite; animation-delay: 1s; --drift: -30px; }
+        .spark:nth-child(3) { left: 30%; animation: float-spark-spiral 10s linear infinite; animation-delay: 2s; --drift: 40px; }
+        .spark:nth-child(4) { left: 40%; animation: float-spark-straight 14s linear infinite; animation-delay: 0.5s; --drift: -20px; }
+        .spark:nth-child(5) { left: 50%; animation: float-spark-wave 9s linear infinite; animation-delay: 3s; --drift: 35px; }
+        .spark:nth-child(6) { left: 60%; animation: float-spark-spiral 11s linear infinite; animation-delay: 1.5s; --drift: -40px; }
+        .spark:nth-child(7) { left: 70%; animation: float-spark-straight 13s linear infinite; animation-delay: 2.5s; --drift: 25px; }
+        .spark:nth-child(8) { left: 80%; animation: float-spark-wave 10s linear infinite; animation-delay: 4s; --drift: -35px; }
+        .spark:nth-child(9) { left: 90%; animation: float-spark-spiral 12s linear infinite; animation-delay: 0.8s; --drift: 30px; }
+        .spark:nth-child(10) { left: 15%; animation: float-spark-straight 15s linear infinite; animation-delay: 3.5s; --drift: -25px; }
+        .spark:nth-child(11) { left: 25%; animation: float-spark-wave 8s linear infinite; animation-delay: 2.2s; --drift: 45px; }
+        .spark:nth-child(12) { left: 35%; animation: float-spark-spiral 11s linear infinite; animation-delay: 4.5s; --drift: -30px; }
+        .spark:nth-child(13) { left: 45%; animation: float-spark-straight 9s linear infinite; animation-delay: 1.8s; --drift: 20px; }
+        .spark:nth-child(14) { left: 55%; animation: float-spark-wave 13s linear infinite; animation-delay: 3.2s; --drift: -40px; }
+        .spark:nth-child(15) { left: 65%; animation: float-spark-spiral 10s linear infinite; animation-delay: 0.3s; --drift: 35px; }
+        .spark:nth-child(16) { left: 75%; animation: float-spark-straight 12s linear infinite; animation-delay: 2.8s; --drift: -20px; }
+        .spark:nth-child(17) { left: 85%; animation: float-spark-wave 14s linear infinite; animation-delay: 4.2s; --drift: 40px; }
+        .spark:nth-child(18) { left: 95%; animation: float-spark-spiral 9s linear infinite; animation-delay: 1.2s; --drift: -35px; }
+        .spark:nth-child(19) { left: 5%; animation: float-spark-straight 11s linear infinite; animation-delay: 3.8s; --drift: 25px; }
+        .spark:nth-child(20) { left: 12%; animation: float-spark-wave 13s linear infinite; animation-delay: 0.7s; --drift: -45px; }
+    </style>
+</head>
+<body>
+    <div class="background-container">
+        <img src="background.jpg" alt="Background" class="background-image">
+    </div>
+    
+    <div class="sparks-container">
+        <div class="spark small"></div>
+        <div class="spark medium"></div>
+        <div class="spark large"></div>
+        <div class="spark small"></div>
+        <div class="spark medium"></div>
+        <div class="spark small"></div>
+        <div class="spark large"></div>
+        <div class="spark medium"></div>
+        <div class="spark small"></div>
+        <div class="spark large"></div>
+        <div class="spark medium"></div>
+        <div class="spark small"></div>
+        <div class="spark medium"></div>
+        <div class="spark large"></div>
+        <div class="spark small"></div>
+        <div class="spark medium"></div>
+        <div class="spark small"></div>
+        <div class="spark large"></div>
+        <div class="spark medium"></div>
+        <div class="spark small"></div>
+    </div>
+    
+    <div class="content">
+        <div class="poem-container">
+            <h1 class="poem-title">Eidolons</h1>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">I met a seer,</div>
+                <div class="poem-line">Passing the hues and objects of the world,</div>
+                <div class="poem-line">The fields of art and learning, pleasure, sense,</div>
+                <div class="poem-line">To glean eidolons.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">Put in thy chants said he,</div>
+                <div class="poem-line">No more the puzzling hour nor day, nor segments, parts, put in,</div>
+                <div class="poem-line">Put first before the rest as light for all and entrance-song of all,</div>
+                <div class="poem-line">That of eidolons.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">Ever the dim beginning,</div>
+                <div class="poem-line">Ever the growth, the rounding of the circle,</div>
+                <div class="poem-line">Ever the summit and the merge at last, (to surely start again,)</div>
+                <div class="poem-line">Eidolons! eidolons!</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">Ever the mutable,</div>
+                <div class="poem-line">Ever materials, changing, crumbling, re-cohering,</div>
+                <div class="poem-line">Ever the ateliers, the factories divine,</div>
+                <div class="poem-line">Issuing eidolons.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">Lo, I or you,</div>
+                <div class="poem-line">Or woman, man, or state, known or unknown,</div>
+                <div class="poem-line">We seeming solid wealth, strength, beauty build,</div>
+                <div class="poem-line">But really build eidolons.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">The ostent evanescent,</div>
+                <div class="poem-line">The substance of an artist's mood or savan's studies long,</div>
+                <div class="poem-line">Or warrior's, martyr's, hero's toils,</div>
+                <div class="poem-line">To fashion his eidolon.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">Of every human life,</div>
+                <div class="poem-line">(The units gather'd, posted, not a thought, emotion, deed, left out,)</div>
+                <div class="poem-line">The whole or large or small summ'd, added up,</div>
+                <div class="poem-line">In its eidolon.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">The old, old urge,</div>
+                <div class="poem-line">Based on the ancient pinnacles, lo, newer, higher pinnacles,</div>
+                <div class="poem-line">From science and the modern still impell'd,</div>
+                <div class="poem-line">The old, old urge, eidolons.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">The present now and here,</div>
+                <div class="poem-line">America's busy, teeming, intricate whirl,</div>
+                <div class="poem-line">Of aggregate and segregate for only thence releasing,</div>
+                <div class="poem-line">To-day's eidolons.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">These with the past,</div>
+                <div class="poem-line">Of vanish'd lands, of all the reigns of kings across the sea,</div>
+                <div class="poem-line">Old conquerors, old campaigns, old sailors' voyages,</div>
+                <div class="poem-line">Joining eidolons.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">Densities, growth, facades,</div>
+                <div class="poem-line">Strata of mountains, soils, rocks, giant trees,</div>
+                <div class="poem-line">Far-born, far-dying, living long, to leave,</div>
+                <div class="poem-line">Eidolons everlasting.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">Exalte, rapt, ecstatic,</div>
+                <div class="poem-line">The visible but their womb of birth,</div>
+                <div class="poem-line">Of orbic tendencies to shape and shape and shape,</div>
+                <div class="poem-line">The mighty earth-eidolon.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">All space, all time,</div>
+                <div class="poem-line">(The stars, the terrible perturbations of the suns,</div>
+                <div class="poem-line">Swelling, collapsing, ending, serving their longer, shorter use,)</div>
+                <div class="poem-line">Fill'd with eidolons only.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">The noiseless myriads,</div>
+                <div class="poem-line">The infinite oceans where the rivers empty,</div>
+                <div class="poem-line">The separate countless free identities, like eyesight,</div>
+                <div class="poem-line">The true realities, eidolons.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">Not this the world,</div>
+                <div class="poem-line">Nor these the universes, they the universes,</div>
+                <div class="poem-line">Purport and end, ever the permanent life of life,</div>
+                <div class="poem-line">Eidolons, eidolons.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">Beyond thy lectures learn'd professor,</div>
+                <div class="poem-line">Beyond thy telescope or spectroscope observer keen, beyond all mathematics,</div>
+                <div class="poem-line">Beyond the doctor's surgery, anatomy, beyond the chemist with his chemistry,</div>
+                <div class="poem-line">The entities of entities, eidolons.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">Unfix'd yet fix'd,</div>
+                <div class="poem-line">Ever shall be, ever have been and are,</div>
+                <div class="poem-line">Sweeping the present to the infinite future,</div>
+                <div class="poem-line">Eidolons, eidolons, eidolons.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">The prophet and the bard,</div>
+                <div class="poem-line">Shall yet maintain themselves, in higher stages yet,</div>
+                <div class="poem-line">Shall mediate to the Modern, to Democracy, interpret yet to them,</div>
+                <div class="poem-line">God and eidolons.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">And thee my soul,</div>
+                <div class="poem-line">Joys, ceaseless exercises, exaltations,</div>
+                <div class="poem-line">Thy yearning amply fed at last, prepared to meet,</div>
+                <div class="poem-line">Thy mates, eidolons.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">Thy body permanent,</div>
+                <div class="poem-line">The body lurking there within thy body,</div>
+                <div class="poem-line">The only purport of the form thou art, the real I myself,</div>
+                <div class="poem-line">An image, an eidolon.</div>
+            </div>
+            
+            <div class="poem-stanza">
+                <div class="poem-line">Thy very songs not in thy songs,</div>
+                <div class="poem-line">No special strains to sing, none for itself,</div>
+                <div class="poem-line">But from the whole resulting, rising at last and floating,</div>
+                <div class="poem-line">A round full-orb'd eidolon.</div>
+            </div>
+            
+            <div class="author">Walt Whitman</div>
+        </div>
+    </div>
+</body>
+</html>
